@@ -59,11 +59,16 @@ def read_user_choice(var_name, options):
     if not options:
         raise ValueError
 
-    choice_map = OrderedDict((f'{i}', value) for i, value in enumerate(options, 1))
-    choices = choice_map.keys()
+    choices = [option[0] if isinstance(option, tuple) else option for option in options]
+    values = [option[1] if isinstance(option, tuple) else option for option in options]
+
+    choices_map = OrderedDict((f'{i}', choice) for i, choice in enumerate(choices, 1))
+    values_map = OrderedDict((f'{i}', value) for i, value in enumerate(values, 1))
+
+    choices = choices_map.keys()
     default = '1'
 
-    choice_lines = ['{} - {}'.format(*c) for c in choice_map.items()]
+    choice_lines = ['{} - {}'.format(*c) for c in choices_map.items()]
     prompt = '\n'.join(
         (
             f"Select {var_name}:",
@@ -75,7 +80,7 @@ def read_user_choice(var_name, options):
     user_choice = click.prompt(
         prompt, type=click.Choice(choices), default=default, show_choices=False
     )
-    return choice_map[user_choice]
+    return values_map[user_choice]
 
 
 DEFAULT_DISPLAY = 'default'
